@@ -1,70 +1,123 @@
-import Figure from './forms/Figure.js';
 import Circle from './forms/Circle.js';
 import Rect from './forms/Rect.js';
+import Figure from './forms/Figure.js';
+
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext('2d');
 
+let showSelection = document.getElementById("selection");
+let figuras = [];
 let cw = canvas.width = 640;
 let ch = canvas.height = 480;
-let haveForms = null;
-let posx, posy;
 
-let figuras = [];
-for(let i =0;i<figuras.length;i++){
-    figuras[i].addEventListener("click", ()=> {
-        console.log("se clickeo una figura");
-    })
-}
+let isDragging = false;
+let offsetX, offsetY;
+let selectedFigure = null;
 
+canvas.addEventListener('mousedown', function (event) {
+
+    //los metodos siguientes hacen que las posiciones del mouseX, mouseY arranquen en 0,0 cuando se clickea dentro del canvas
+    //sino se contempla toda la ventana
+    let mouseX = event.clientX - canvas.getBoundingClientRect().left;
+    let mouseY = event.clientY - canvas.getBoundingClientRect().top;
+    //recorro las figuras
+    for (let i = 0; i < figuras.length; i++) {
+        let figura = figuras[i];
+
+        //si el click fue hecho dentro de una figura se encarga la siguiente funcion (isInside)
+    
+        if (figura.isInside(mouseX, mouseY)) {
+            
+            figura.setFill("yellow");
+            figura.draw();
+            showSelection.innerHTML = figura.getName();
+            selectedFigure = figura;
+            offsetX = mouseX - figura.getPosX();
+            offsetY = mouseY - figura.getPosY();
+            isDragging = true;
+            break;
+        }
+
+
+    }
+
+
+
+});
+
+canvas.addEventListener('mousemove', function (event) {
+    if (isDragging && selectedFigure) {
+        const mouseX = event.clientX - canvas.getBoundingClientRect().left;
+        const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+
+        // Calcula el desplazamiento actualizado
+        const newPosX = mouseX - offsetX;
+        const newPosY = mouseY - offsetY;
+
+
+
+        // Actualiza la posición de la figura seleccionada
+        selectedFigure.moveTo(newPosX, newPosY);
+
+
+//dibujo denuevo para que se vaya mostrando mientras se arrastra 
+        redraw();
+    }
+});
+
+
+canvas.addEventListener('mouseup', function (event) {
+    isDragging = false;
+    if (selectedFigure) {
+        selectedFigure.setFill(selectedFigure.getOriginalFill()); // Restaura el color original
+        redraw();
+    }
+    selectedFigure = null;
+});
+
+
+//levanto el boton limpiar para limpiar el lienzo el arreglo de figuras y la variable estatica count de Figure
 document.getElementById("clear").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    haveForms=false;
+    figuras = [];
+    Figure.count = 1;
 
 })
 
+//levanto el boton Generar y creo 1 de cada tres figuras
 document.getElementById("generate").addEventListener("click", (event) => {
     generateRect(true, event);
     generateRect(false, event);
     generateCircle(event);
-    console.log(figuras);
-
-    // Agregar event listener a las figuras
-    figuras.forEach(figura => {
-        figura.addEventListener("click", () => {
-            console.log("Se clickeó una figura");
-        });
-    });
 
 
 });
 function generateCircle(event) {
-    haveForms = true;
+    //no controla que exista un objeto encima de otro objeto
+
     let radius = numberRandom(50);
-    let posX = numberRandom(cw - 2 * radius) + radius; // Asegura que posX esté dentro del lienzo
-    let posY = numberRandom(ch - 2 * radius) + radius; // Asegura que posY esté dentro del lienzo
-    let circulo2 = new Circle(posX, posY, radius, "green", ctx);
-    circulo2.draw();
-    // Verificar si el punto está dentro de alguna figura
-    console.log("Posicion del click circulo (" + event.clientX + "," + event.clientY + ")");
-    figuras.push(Circle);
+    let posX = numberRandom(cw - (2 * radius)) + radius; // Asegura que posX esté dentro del lienzo
+    let posY = numberRandom(ch - (2 * radius)) + radius; // Asegura que posY esté dentro del lienzo
+    let circulo = new Circle("Figura " + Figure.count, posX, posY, radius, "green", ctx);
+    circulo.draw();
+
+    //guardo las formas que se crean en un arreglo
+    figuras.push(circulo);
+
 
 
 }
 
-
-let height;
-let width;
 function generateRect(type, event) {
     //no controla que exista un objeto encima de otro objeto
-    // Verificar si el punto está dentro de alguna figura
-    haveForms = true;
 
-    let text = type == true ? "Rectangulo" : "Cuadrado";
 
-    console.log("Posicion del click " + text + "(" + event.clientX + "," + event.clientY + ")");
+    let height;
+    let width;
 
-    //true = rectangulo ,false (cuadrado)
+
+    //true = rectangulo ,false =cuadrado
     if (type) {
         height = numberRandom(80);
         width = numberRandom(200);
@@ -74,7 +127,6 @@ function generateRect(type, event) {
         height = sameRandom;
         width = sameRandom;
     }
-    //Defino el ancho y la altura
 
     // Con estos metodos(maxX,MaxY) limitamos el aleatorio para que respete el canvas y no se desborde
     // Tenemos el ancho y el alto del lienzo como maximos para posiciones en x,y 
@@ -86,8 +138,7 @@ function generateRect(type, event) {
     //una vez que tenemos los maximos podemos generar la poscion aleatoria  y generar el objeto
     let rectX = numberRandom(xMax);
     let rectY = numberRandom(yMax);
-    posx = rectX;
-    posy = rectY;
+
 
     let color;
     //si no es rectangulo 
@@ -96,25 +147,33 @@ function generateRect(type, event) {
     } else {
         color = "black";
     }
-    let rectangulo = new Rect(rectX, rectY, color, ctx, width, height);
+    let rectangulo = new Rect("Figura " + Figure.count, rectX, rectY, color, ctx, width, height);
     rectangulo.draw();
+    //guardo las formas que se crean en un arreglo
     figuras.push(rectangulo);
 
 
 
-    return rectangulo;
 }
 
-//Numeros aleatorios limitados 
+//Numeros aleatorios limitados s
 function numberRandom(max) {
     return Math.floor(Math.random() * (max + 1));
 }
+
+
 function maxY(height) {
-    return ch - (height / 2);
+    return ch - (height);
 }
 function maxX(width) {
-    return cw - (width / 2);
+    return cw - (width);
 }
 
 
 
+function redraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    figuras.forEach(figura => {
+        figura.draw();
+    });
+}

@@ -11,5 +11,26 @@ body {
 #canvas{
     background-color: var(--bg2);
     display: block;
-    margin: 10px auto;
+    margin: auto;
+}
+.buttons {
+    width: 500px;
+    margin: auto;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    text-transform: uppercase;
+    font-weight: 600;
+     
+}
+.buttons button {
+    background-color: var(--bg2);
+    padding: 10px;
+    border: none;
+    color: var(--bg1);
+}
+.wrapper-show {
+    color: var(--bg2);
+  
+    
 }

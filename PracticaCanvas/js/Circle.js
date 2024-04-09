@@ -2,8 +2,8 @@ import Figure from './Figure.js';
 
 export default class Circle extends Figure {
 
-    constructor(posX, posY, radius, fill, context) {
-        super(posX, posY, fill, context);
+    constructor(name,posX, posY, radius, fill, context) {
+        super(name,posX, posY, fill, context);
         this.radius = radius;
     }
 

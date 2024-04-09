@@ -1,9 +1,19 @@
 export default class Figure {
-    constructor(posX, posY, fill, context) {
+    static count = 0; // Variable estática
+
+    constructor(name, posX, posY, fill, context) {
+        Figure.count++;
+        this.name = name;
         this.posX = posX;
         this.posY = posY;
         this.fill = fill;
         this.context = context;
+    }
+
+
+ 
+    getName() {
+        return this.name;
     }
     setFill(fill) {
         this.fill = fill;
@@ -29,7 +39,7 @@ export default class Figure {
     draw() {
         this.context.fillStyle = this.fill;
     }
-    moveTo(posX,posY){
+    moveTo(posX, posY) {
         this.posX = posX;
         this.posY = posY;
     }

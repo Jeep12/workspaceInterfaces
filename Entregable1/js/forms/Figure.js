@@ -1,9 +1,18 @@
 export default class Figure {
-    constructor(posX, posY, fill, context) {
+    //empiezo el contador en 1
+    static count = 1;
+    constructor(name, posX, posY, fill, context) {
+        //en cada instancia se le incrementa 1;
+        Figure.count++;
+        this.name = name;
         this.posX = posX;
         this.posY = posY;
         this.fill = fill;
+        this.originalFill = fill;
         this.context = context;
+    }
+    getName() {
+        return this.name;
     }
     setFill(fill) {
         this.fill = fill;
@@ -29,9 +38,13 @@ export default class Figure {
     draw() {
         this.context.fillStyle = this.fill;
     }
-    moveTo(posX,posY){
+    moveTo(posX, posY) {
         this.posX = posX;
         this.posY = posY;
+    }
+    //guardo el color original para restablecerlo cuando suceda el evento mouseUp
+    getOriginalFill() {
+        return this.originalFill;
     }
 
 

@@ -2,8 +2,8 @@ import Figure from './Figure.js';
 
 export default class Circle extends Figure {
 
-    constructor(posX, posY, radius, fill, context) {
-        super(posX, posY, fill, context);
+    constructor(name,posX, posY, radius, fill, context) {
+        super(name,posX, posY, fill, context);
         this.radius = radius;
     }
 
@@ -16,6 +16,14 @@ export default class Circle extends Figure {
     }
     getRadius() {
         return this.radius;
-    }   
+    } 
+
+    
+    isInside(x, y) {
+        const distanciaAlCentro = Math.sqrt(
+            Math.pow(x - this.getPosX(), 2) + Math.pow(y - this.getPosY(), 2)
+        );
+        return distanciaAlCentro <= this.radius;
+    }  
 
 }

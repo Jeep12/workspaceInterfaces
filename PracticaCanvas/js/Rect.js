@@ -2,8 +2,8 @@ import Figure from './Figure.js';
 
 export default class Rect extends Figure {
 
-    constructor(posX, posY, fill, context, width, height) {
-        super(posX, posY, fill, context);
+    constructor(name,posX, posY, fill, context, width, height) {
+        super(name,posX, posY, fill, context);
         this.height = height;
         this.width = width;
     }
